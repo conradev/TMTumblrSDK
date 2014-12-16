@@ -8,17 +8,17 @@
 
 #import "TMTumblrAppClient.h"
 
-#import <UIKit/UIKit.h>
+#import <ContentKit/ContentKit.h>
 #import "TMSDKFunctions.h"
 
 @implementation TMTumblrAppClient
 
 + (BOOL)isTumblrInstalled {
-    return [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tumblr://"]];
+    return [[WFApplicationContext sharedContext] canOpenURL:[NSURL URLWithString:@"tumblr://"]];
 }
 
 + (void)viewInAppStore {
-    [[UIApplication sharedApplication] openURL:
+    [[WFApplicationContext sharedContext] openURL:
      [NSURL URLWithString:@"itms-apps://itunes.apple.com/us/app/tumblr/id305343404"]];
 }
 
@@ -121,7 +121,7 @@
         NSString *URLString = [NSString stringWithFormat:@"tumblr://x-callback-url/%@?%@", action,
                                TMDictionaryToQueryString(mutableParameters)];
         
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:URLString]];
+        [[WFApplicationContext sharedContext] openURL:[NSURL URLWithString:URLString]];
     }
 }
 

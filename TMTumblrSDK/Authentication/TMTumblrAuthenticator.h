@@ -33,6 +33,8 @@ typedef void (^TMAuthenticationCallback)(NSString *, NSString *, NSError *);
  */
 - (void)authenticate:(NSString *)URLScheme callback:(TMAuthenticationCallback)callback;
 
+#endif
+
 /**
  Authenticate via three-legged OAuth with a given UIWebView.
  
@@ -52,8 +54,6 @@ typedef void (^TMAuthenticationCallback)(NSString *, NSString *, NSError *);
  This method is the last part of the authentication flow started by calling `authenticate:callback:`
  */
 - (BOOL)handleOpenURL:(NSURL *)url;
-
-#endif
 
 /**
  Authenticate via xAuth.

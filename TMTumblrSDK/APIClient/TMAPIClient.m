@@ -47,6 +47,8 @@ NSString *fullBlogName(NSString *blogName);
                                                 }];
 }
 
+#ifdef __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__
+
 - (void)authenticate:(NSString *)URLScheme callback:(void(^)(NSError *))callback {
     [[TMTumblrAuthenticator sharedInstance] authenticate:URLScheme
                                                 callback:^(NSString *token, NSString *secret, NSError *error) {
@@ -56,6 +58,8 @@ NSString *fullBlogName(NSString *blogName);
                                                     callback(error);
                                                 }];
 }
+
+#endif
 
 - (BOOL)handleOpenURL:(NSURL *)url {
     return [[TMTumblrAuthenticator sharedInstance] handleOpenURL:url];
@@ -390,7 +394,6 @@ fileNameArray:(NSArray *)fileNameArrayOrNil parameters:(NSDictionary *)parameter
     mutableParameters[@"api_key"] = self.OAuthConsumerKey;
     
     JXHTTPOperation *request = [JXHTTPOperation withURLString:[self URLWithPath:path] queryParameters:mutableParameters];
-    request.continuesInAppBackground = YES;
     request.requestTimeoutInterval = self.timeoutInterval;
     
     [self signRequest:request withParameters:nil];
@@ -404,7 +407,6 @@ fileNameArray:(NSArray *)fileNameArrayOrNil parameters:(NSDictionary *)parameter
     
     JXHTTPOperation *request = [JXHTTPOperation withURLString:[self URLWithPath:path]];
     request.requestMethod = @"POST";
-    request.continuesInAppBackground = YES;
     request.requestBody = [JXHTTPFormEncodedBody withDictionary:mutableParameters];
     request.requestTimeoutInterval = self.timeoutInterval;
     
@@ -422,7 +424,6 @@ fileNameArray:(NSArray *)fileNameArrayOrNil parameters:(NSDictionary *)parameter
 
     JXHTTPOperation *request = [JXHTTPOperation withURLString:[self URLWithPath:blogPath(@"post", blogName)]];
     request.requestMethod = @"POST";
-    request.continuesInAppBackground = YES;
     request.requestBody = [self multipartBodyForParameters:mutableParameters filePathArray:filePathArray
                                           contentTypeArray:contentTypeArray fileNameArray:fileNameArray];
     request.requestTimeoutInterval = self.timeoutInterval;

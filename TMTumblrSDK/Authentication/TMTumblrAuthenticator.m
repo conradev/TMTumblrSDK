@@ -88,15 +88,18 @@ NSDictionary *formEncodedDataToDictionary(NSData *data);
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:handler];
 }
 
+#endif
+
 - (void)authenticate:(NSString *)URLScheme webView:(UIWebView *)webView callback:(TMAuthenticationCallback)callback {
     // Clear token secret in case authentication was previously started but not finished
-    self.OAuthTokenSecret = nil;
+    self.threeLeggedOAuthTokenSecret = nil;
     
     NSString *tokenRequestURLString = [NSString stringWithFormat:@"http://www.tumblr.com/oauth/request_token?oauth_callback=%@",
                                        TMURLEncode([NSString stringWithFormat:@"%@://tumblr-authorize", URLScheme])];
     
     NSMutableURLRequest *request = mutableRequestWithURLString(tokenRequestURLString);
-    [self signRequest:request withParameters:nil];
+    [[self class] signRequest:request withParameters:nil consumerKey:self.OAuthConsumerKey
+               consumerSecret:self.OAuthConsumerSecret token:nil tokenSecret:nil];
     
     NSURLConnectionCompletionHandler handler = ^(NSURLResponse *response, NSData *data, NSError *error) {
         if (error) {
@@ -106,13 +109,13 @@ NSDictionary *formEncodedDataToDictionary(NSData *data);
             return;
         }
         
-        int statusCode = ((NSHTTPURLResponse *)response).statusCode;
+        NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
         
         if (statusCode == 200) {
-            self.authCallback = callback;
+            self.threeLeggedOAuthCallback = callback;
             
             NSDictionary *responseParameters = formEncodedDataToDictionary(data);
-            self.OAuthTokenSecret = responseParameters[@"oauth_token_secret"];
+            self.threeLeggedOAuthTokenSecret = responseParameters[@"oauth_token_secret"];
             
             NSURL *authURL = [NSURL URLWithString:
                               [NSString stringWithFormat:@"https://www.tumblr.com/oauth/authorize?oauth_token=%@",
@@ -189,8 +192,6 @@ NSDictionary *formEncodedDataToDictionary(NSData *data);
     
     return YES;
 }
-
-#endif
 
 - (void)xAuth:(NSString *)emailAddress password:(NSString *)password callback:(TMAuthenticationCallback)callback {
     NSDictionary *requestParameters = @{
